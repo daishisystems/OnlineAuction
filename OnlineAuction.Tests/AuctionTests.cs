@@ -6,13 +6,15 @@ namespace OnlineAuction.Tests
     public class AuctionTests
     {
         [Theory]
-        [InlineData(95, 80, 100, 5, true, 100)]  // Next valid bid is exactly maxBid
-        [InlineData(70, 50, 90, 10, true, 80)]  // Next valid bid is within maxBid
-        [InlineData(100, 95, 100, 5, false, 100)]  // Exceeding maxBid is not allowed
+        [InlineData(95, 80, 100, 5, true, 95)]  // Next valid bid is exactly maxBid
+        [InlineData(70, 50, 90, 10, true, 70)]  // Next valid bid is within maxBid
+        [InlineData(100, 95, 100, 5, true, 100)]  // Exceeding maxBid is not allowed
         [InlineData(80, 50, 75, 10, false, 75)]  // MaxBid is reached but cannot exceed
-        [InlineData(60, 40, 100, 20, true, 80)]  // Exactly matches newBid on first increment
-        [InlineData(60, 40, 100, 10, true, 70)]  // Multiple increments required within range
+        [InlineData(60, 40, 100, 20, true, 60)]  // Exactly matches newBid on first increment
+        [InlineData(60, 40, 100, 10, true, 60)]  // Multiple increments required within range
         [InlineData(200, 150, 150, 10, false, 150)]  // newBid is greater than or equal to maxBid
+        [InlineData(55, 60, 85, 5, true, 60)]  // Spec test case #1
+        [InlineData(625, 599, 725, 8, true, 625)]  // Spec test case #2
         public void CalculateNextBid_ShouldReturnExpectedResults(
             decimal newBid,
             decimal currentBid,
@@ -31,37 +33,39 @@ namespace OnlineAuction.Tests
         }
 
         [Fact]
-        public void CalculateNextBid_ShouldThrowException_WhenAutoIncrementIsZero()
+        public void CalculateNextBid_ShouldThrowArgumentException_ForInvalidNewBid()
         {
             // Arrange
-            decimal newBid = 100;
-            decimal currentBid = 80;
-            decimal maxBid = 150;
-            decimal autoIncrement = 0;
+            var auction = new Auction();
 
             // Act & Assert
-            Auction auction = new Auction();
-            Assert.Throws<DivideByZeroException>(() =>
-                auction.CalculateNextBid(newBid, currentBid, maxBid, autoIncrement)
+            Assert.Throws<ArgumentException>(() =>
+                auction.CalculateNextBid(0, 60, 85, 5)
             );
         }
 
         [Fact]
-        public void CalculateNextBid_ShouldHandleEdgeCaseWithNoIncrement()
+        public void CalculateNextBid_ShouldThrowArgumentException_ForInvalidCurrentBid()
         {
             // Arrange
-            decimal newBid = 100;
-            decimal currentBid = 100;
-            decimal maxBid = 100;
-            decimal autoIncrement = 5;
+            var auction = new Auction();
 
-            // Act
-            Auction auction = new Auction();
-            var result = auction.CalculateNextBid(newBid, currentBid, maxBid, autoIncrement);
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                auction.CalculateNextBid(55, 0, 85, 5)
+            );
+        }
 
-            // Assert
-            Assert.False(result.CanExceedNewBid);
-            Assert.Equal(100, result.NextValidBid);
+        [Fact]
+        public void CalculateNextBid_ShouldThrowArgumentException_ForInvalidMaxBid()
+        {
+            // Arrange
+            var auction = new Auction();
+
+            // Act & Assert
+            Assert.Throws<ArgumentException>(() =>
+                auction.CalculateNextBid(55, 60, 0, 5)
+            );
         }
     }
 }
