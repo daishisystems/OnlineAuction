@@ -2,35 +2,37 @@
 using System.Collections.Generic;
 using OnlineAuction;
 
-public class AuctionTests
+namespace OnlineAuction.Tests
 {
-    [Theory]
-    [MemberData(nameof(GetAuctionTestCases))]
-    public void Auction_ShouldDetermineWinningBidCorrectly(List<Bid> bids, string expectedWinner, decimal expectedWinningBid)
+    public class AuctionTests
     {
-        // Arrange
-        var auction = new Auction();
-
-        // Add all bids to the auction
-        foreach (var bid in bids)
+        [Theory]
+        [MemberData(nameof(GetAuctionTestCases))]
+        public void Auction_ShouldDetermineWinningBidCorrectly(List<Bid> bids, string expectedWinner, decimal expectedWinningBid)
         {
-            auction.AddBid(bid);
+            // Arrange
+            var auction = new Auction();
+
+            // Add all bids to the auction
+            foreach (var bid in bids)
+            {
+                auction.AddBid(bid);
+            }
+
+            // Act
+            var winner = auction.GetWinningBid();
+
+            // Assert
+            Assert.Equal(expectedWinner, winner.Bidder);
+            Assert.Equal(expectedWinningBid, winner.StartingBid);
         }
 
-        // Act
-        var winner = auction.GetWinningBid();
-
-        // Assert
-        Assert.Equal(expectedWinner, winner.Bidder);
-        Assert.Equal(expectedWinningBid, winner.StartingBid);
-    }
-
-    /// <summary>
-    /// Provides test cases for the auction logic.
-    /// </summary>
-    public static IEnumerable<object[]> GetAuctionTestCases()
-    {
-        return new List<object[]>
+        /// <summary>
+        /// Provides test cases for the auction logic.
+        /// </summary>
+        public static IEnumerable<object[]> GetAuctionTestCases()
+        {
+            return new List<object[]>
         {
             // Single bid scenario
             new object[]
@@ -42,18 +44,6 @@ public class AuctionTests
                 "Alice",
                 50
             },
-
-            //// Two bidders, simple case
-            //new object[]
-            //{
-            //    new List<Bid>
-            //    {
-            //        new Bid("Alice", 50, 80, 3),
-            //        new Bid("Bob", 60, 82, 5)
-            //    },
-            //    "Bob",
-            //    82
-            //},
 
             // Three bidders with one maxing out
             new object[]
@@ -92,20 +82,7 @@ public class AuctionTests
                 },
                 "Charlie",
                 85
-            },
-
-            //// Equal starting bids with different max bids
-            //new object[]
-            //{
-            //    new List<Bid>
-            //    {
-            //        new Bid("Alice", 50, 80, 3),
-            //        new Bid("Bob", 50, 90, 2),
-            //        new Bid("Charlie", 50, 85, 5)
-            //    },
-            //    "Bob",
-            //    90
-            //},
+            },            
 
             // All bidders max out
             new object[]
@@ -133,5 +110,6 @@ public class AuctionTests
                 100
             }
         };
+        }
     }
 }
