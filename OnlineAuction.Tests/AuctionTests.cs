@@ -109,6 +109,19 @@ namespace OnlineAuction.Tests
                     },
                     "Charlie",
                     100
+                },
+
+                // New test case for uploaded data
+                new object[]
+                {
+                    new List<Bid>
+                    {
+                        new Bid("Alice", 50, 80, 3),
+                        new Bid("Bob", 60, 82, 2),
+                        new Bid("Charlie", 55, 85, 5)
+                    },
+                    "Charlie",
+                    85
                 }
             };
         }
