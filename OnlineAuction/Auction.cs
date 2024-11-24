@@ -1,64 +1,87 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace OnlineAuction
 {
     public class Auction
     {
+        private List<Bid> Bids { get; set; } = new List<Bid>();
+
         /// <summary>
-        /// Determines if the newBid can be exceeded by increments of autoIncrement, and returns the minimum valid bid.
+        /// Adds a new bid to the auction and determines the winning bid.
         /// </summary>
-        /// <param name="newBid">The new bid amount to be evaluated.</param>
-        /// <param name="currentBid">The current highest bid amount.</param>
-        /// <param name="maxBid">The maximum allowable bid amount for the bidder.</param>
-        /// <param name="autoIncrement">The auto-increment value used to increment bids.</param>
-        /// <returns>(bool, decimal): A tuple where the boolean indicates if bidding can continue, and the decimal is the next valid bid.</returns>
-        public (bool CanExceedNewBid, decimal NextValidBid) CalculateNextBid(decimal newBid, decimal currentBid, decimal maxBid, decimal autoIncrement)
+        public void AddBid(Bid newBid)
         {
-            // Validate inputs individually with specific error messages
-            if (newBid <= 0)
+            // Add the new bid to the collection
+            Bids.Add(newBid);
+
+            // If there are multiple bids, determine the winning bid
+            if (Bids.Count > 1)
             {
-                throw new ArgumentException("The new bid must be greater than zero.", nameof(newBid));
+                DetermineWinningBid();
             }
-            if (currentBid <= 0)
+        }
+
+        private void DetermineWinningBid()
+        {
+            bool bidIncremented;
+
+            do
             {
-                throw new ArgumentException("The current bid must be greater than zero.", nameof(currentBid));
-            }
-            if (maxBid <= 0)
+                bidIncremented = false;
+
+                // Iterate through all bids
+                foreach (var currentBid in Bids)
+                {
+                    // Find the current highest bid among all other bidders
+                    var maxOtherBid = Bids
+                        .Where(b => b != currentBid)
+                        .Max(b => b.StartingBid);
+
+                    // Increment the current bid if:
+                    // 1. It is less than or equal to the maxOtherBid.
+                    // 2. The incremented value does not exceed its MaxBid.
+                    if (currentBid.StartingBid <= maxOtherBid && currentBid.StartingBid + currentBid.AutoIncrement <= currentBid.MaxBid)
+                    {
+                        currentBid.StartingBid += currentBid.AutoIncrement;
+                        bidIncremented = true;
+                    }
+                }
+
+            } while (bidIncremented); // Exit the loop when no bids can increment further
+        }
+
+
+        /// <summary>
+        /// Returns the current winning bid after calculation.
+        /// </summary>
+        public Bid GetWinningBid()
+        {
+            // If there's only one bid, it's automatically the winning bid
+            if (Bids.Count == 1)
             {
-                throw new ArgumentException("The max bid must be greater than zero.", nameof(maxBid));
-            }
-            if (autoIncrement <= 0)
-            {
-                throw new ArgumentException("The auto-increment value must be greater than zero.", nameof(autoIncrement));
+                return Bids.First();
             }
 
-            // If the max bid is greater than the new bid, bidding cannot continue
-            if (newBid > maxBid)
-            {
-                return (false, maxBid);
-            }
+            // Otherwise, return the highest bid after simulation
+            return Bids.OrderByDescending(b => b.StartingBid).First();
+        }
+    }
 
-            // If the new bid is greater than the current bid, return true and the new bid value
-            if (newBid > currentBid)
-            {
-                return (true, newBid);
-            }
+    public class Bid
+    {
+        public string Bidder { get; set; }
+        public decimal StartingBid { get; set; }
+        public decimal MaxBid { get; set; }
+        public decimal AutoIncrement { get; set; }
 
-            // Calculate the next valid bid by finding the smallest multiple of autoIncrement strictly greater than newBid
-            decimal nextBid = currentBid + autoIncrement * Math.Ceiling((newBid - currentBid) / autoIncrement);
-
-            // Ensure the next bid exceeds newBid
-            if (nextBid <= newBid)
-            {
-                nextBid += autoIncrement;
-            }
-
-            // Ensure the next bid does not exceed maxBid
-            if (nextBid <= maxBid)
-            {
-                return (true, nextBid);
-            }
-
-            // If the next valid bid exceeds maxBid, bidding cannot continue
-            return (false, maxBid);
+        public Bid(string bidder, decimal startingBid, decimal maxBid, decimal autoIncrement)
+        {
+            Bidder = bidder;
+            StartingBid = startingBid;
+            MaxBid = maxBid;
+            AutoIncrement = autoIncrement;
         }
     }
 }
