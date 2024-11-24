@@ -23,8 +23,7 @@
 
             if (Bids.Count == 1)
             {
-                // If there's only one bid, it's the winner
-                return Bids.First();
+                return Bids.First(); // Single bidder wins by default
             }
 
             bool bidIncremented;
@@ -35,25 +34,34 @@
 
                 foreach (var currentBid in Bids)
                 {
-                    // Calculate maxOtherBid with default value to handle empty sequences
+                    // Get the current highest bid among competing bids
                     var maxOtherBid = Bids
                         .Where(b => b != currentBid)
                         .Select(b => b.StartingBid)
-                        .DefaultIfEmpty(0) // Default to 0 if no other bids
+                        .DefaultIfEmpty(0)
                         .Max();
 
-                    // Increment the current bid if it can compete
+                    // Increment the current bid if:
+                    // 1. It is less than or equal to the maxOtherBid.
+                    // 2. The incremented value does not exceed its MaxBid.
                     if (currentBid.StartingBid <= maxOtherBid && currentBid.StartingBid + currentBid.AutoIncrement <= currentBid.MaxBid)
                     {
                         currentBid.StartingBid += currentBid.AutoIncrement;
+                        bidIncremented = true;
+                    }
+                    // Special case: Allow exact increment to reach MaxBid if necessary to compete
+                    else if (currentBid.StartingBid <= maxOtherBid && currentBid.StartingBid < currentBid.MaxBid)
+                    {
+                        currentBid.StartingBid = currentBid.MaxBid;
                         bidIncremented = true;
                     }
                 }
 
             } while (bidIncremented);
 
-            // Return the bid with the highest StartingBid
-            return Bids.OrderByDescending(b => b.StartingBid).First();
+            // Determine the final winning bid
+            return Bids.OrderByDescending(b => b.StartingBid).ThenBy(b => b.Bidder).First();
         }
+
     }
 }

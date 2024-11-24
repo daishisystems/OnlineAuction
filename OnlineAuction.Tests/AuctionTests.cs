@@ -98,7 +98,7 @@ namespace OnlineAuction.Tests
                     82
                 },
 
-                // Single high bidder from the start
+                // Spec test #01
                 new object[]
                 {
                     new List<Bid>
@@ -121,7 +121,20 @@ namespace OnlineAuction.Tests
                         new Bid("Charlie", 625, 725, 8)
                     },
                     "Alice",
-                    722
+                    725
+                },
+
+                // Spec test #03
+                new object[]
+                {
+                    new List<Bid>
+                    {
+                        new Bid("Alice", 2500, 3000, 500),
+                        new Bid("Bob", 2800, 3100, 201),
+                        new Bid("Charlie", 2501, 3200, 247)
+                    },
+                    "Charlie",
+                    3200
                 }
             };
         }
