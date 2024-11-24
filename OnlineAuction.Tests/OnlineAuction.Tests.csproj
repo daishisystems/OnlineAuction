@@ -15,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OnlineAuction\OnlineAuction.csproj" />
+    <ProjectReference Include="..\OnlineAuction.Application.Services\OnlineAuction.Application.Services.csproj" />
+    <ProjectReference Include="..\OnlineAuction.Core.Entities\OnlineAuction.Core.Entities.csproj" />
   </ItemGroup>
 
   <ItemGroup>

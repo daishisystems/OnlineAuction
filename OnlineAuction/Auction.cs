@@ -52,7 +52,6 @@ namespace OnlineAuction
             } while (bidIncremented); // Exit the loop when no bids can increment further
         }
 
-
         /// <summary>
         /// Returns the current winning bid after calculation.
         /// </summary>
@@ -66,22 +65,6 @@ namespace OnlineAuction
 
             // Otherwise, return the highest bid after simulation
             return Bids.OrderByDescending(b => b.StartingBid).First();
-        }
-    }
-
-    public class Bid
-    {
-        public string Bidder { get; set; }
-        public decimal StartingBid { get; set; }
-        public decimal MaxBid { get; set; }
-        public decimal AutoIncrement { get; set; }
-
-        public Bid(string bidder, decimal startingBid, decimal maxBid, decimal autoIncrement)
-        {
-            Bidder = bidder;
-            StartingBid = startingBid;
-            MaxBid = maxBid;
-            AutoIncrement = autoIncrement;
         }
     }
 }
