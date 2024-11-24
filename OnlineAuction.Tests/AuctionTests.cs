@@ -105,23 +105,23 @@ namespace OnlineAuction.Tests
                     {
                         new Bid("Alice", 50, 80, 3),
                         new Bid("Bob", 60, 82, 2),
-                        new Bid("Charlie", 100, 150, 10)
-                    },
-                    "Charlie",
-                    100
-                },
-
-                // New test case for uploaded data
-                new object[]
-                {
-                    new List<Bid>
-                    {
-                        new Bid("Alice", 50, 80, 3),
-                        new Bid("Bob", 60, 82, 2),
                         new Bid("Charlie", 55, 85, 5)
                     },
                     "Charlie",
                     85
+                },
+
+                // Spec test #02
+                new object[]
+                {
+                    new List<Bid>
+                    {
+                        new Bid("Alice", 700, 725, 2),
+                        new Bid("Bob", 599, 725, 15),
+                        new Bid("Charlie", 625, 725, 8)
+                    },
+                    "Alice",
+                    722
                 }
             };
         }
